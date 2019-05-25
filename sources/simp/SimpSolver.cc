@@ -626,7 +626,7 @@ void SimpSolver::removeSatisfied()
     for (i = j = 0; i < clauses.size(); i++){
         const Clause& c = ca[clauses[i]];
         if (c.mark() == 0)
-            if (satisfied(c))
+            if (satisfied(c) && !locked(c))
                 removeClause(clauses[i]);
             else
                 clauses[j++] = clauses[i];

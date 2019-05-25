@@ -487,7 +487,10 @@ bool Solver::simplifyLearnt_x(vec<CRef>& learnts_x)
                 }
             }
             if (sat){
-                removeClause(cr);
+                if (locked(c))
+                    learnts_x[cj++] = learnts_x[ci];
+                else
+                    removeClause(cr);
             }
             else{
                 detachClause(cr, true);
@@ -602,7 +605,10 @@ bool Solver::simplifyLearnt_core()
                 }
             }
             if (sat){
-                removeClause(cr);
+                if (locked(c))
+                    learnts_core[cj++] = learnts_core[ci];
+                else
+                    removeClause(cr);
             }
             else{
                 detachClause(cr, true);
@@ -727,7 +733,10 @@ bool Solver::simplifyLearnt_tier2()
                 }
             }
             if (sat){
-                removeClause(cr);
+                if (locked(c))
+                    learnts_tier2[cj++] = learnts_tier2[ci];
+                else
+                    removeClause(cr);
             }
             else{
                 detachClause(cr, true);
@@ -1636,7 +1645,7 @@ void Solver::removeSatisfied(vec<CRef>& cs)
     int i, j;
     for (i = j = 0; i < cs.size(); i++){
         Clause& c = ca[cs[i]];
-        if (satisfied(c))
+        if (satisfied(c) && !locked(c))
             removeClause(cs[i]);
         else
             cs[j++] = cs[i];
@@ -1650,7 +1659,7 @@ void Solver::safeRemoveSatisfied(vec<CRef>& cs, unsigned valid_mark)
     for (i = j = 0; i < cs.size(); i++){
         Clause& c = ca[cs[i]];
         if (c.mark() == valid_mark)
-            if (satisfied(c))
+            if (satisfied(c) && !locked(c))
                 removeClause(cs[i]);
             else
                 cs[j++] = cs[i];
